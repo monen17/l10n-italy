@@ -9,7 +9,7 @@ class TestRiBaCommon(common.TransactionCase):
     def setUp(self):
         super().setUp()
         self.menu_model = self.env["ir.ui.menu"]
-        self.root_riba_menu = self.browse_ref("l10n_it_riba.menu_riba")
+        self.root_riba_menu = self.browse_ref("l10n_it_riba_oca.menu_riba")
         self.new_parent = self.browse_ref("base.menu_custom")
 
     def test_sibling_moved(self):

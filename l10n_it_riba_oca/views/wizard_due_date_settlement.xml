@@ -30,8 +30,8 @@
 
     <record id="action_wizard_riba_due_date_settlement" model="ir.actions.server">
         <field name="name">C/O Due Date Settlement</field>
-        <field name="model_id" ref="l10n_it_riba.model_riba_slip" />
-        <field name="binding_model_id" ref="l10n_it_riba.model_riba_slip" />
+        <field name="model_id" ref="l10n_it_riba_oca.model_riba_slip" />
+        <field name="binding_model_id" ref="l10n_it_riba_oca.model_riba_slip" />
         <field name="state">code</field>
         <field name="code">action = records.action_riba_due_date_settlement()</field>
     </record>

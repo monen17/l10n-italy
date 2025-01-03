@@ -20,7 +20,7 @@ class IrUiMenu(models.Model):
             # is moved (parent changes).
             # This happens when account_accountant (enterprise)
             # is installed or uninstalled.
-            root_riba_menu = self.env.ref("l10n_it_riba.menu_riba")
+            root_riba_menu = self.env.ref("l10n_it_riba_oca.menu_riba")
             parent_riba_menu = root_riba_menu.parent_id
             if old_parent == parent_riba_menu and new_parent_id != old_parent.id:
                 root_riba_menu.parent_id = new_parent_id

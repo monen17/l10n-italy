@@ -392,13 +392,13 @@ class AccountMoveLine(models.Model):
         model_data_obj = self.env["ir.model.data"]
         ids = model_data_obj.search(
             [
-                ("module", "=", "l10n_it_riba"),
+                ("module", "=", "l10n_it_riba_oca"),
                 ("name", "=", "view_riba_to_issue_tree"),
             ]
         )
         if ids:
             view_payments_tree_id = model_data_obj.get_object_reference(
-                "l10n_it_riba", "view_riba_to_issue_tree"
+                "l10n_it_riba_oca", "view_riba_to_issue_tree"
             )
         if ids and view_id == view_payments_tree_id[1]:
             # Use RiBa slip

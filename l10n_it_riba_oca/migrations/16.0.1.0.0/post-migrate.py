@@ -4,7 +4,7 @@
 
 from openupgradelib import openupgrade
 
-NEW_MODULE_NAME = "l10n_it_riba"
+NEW_MODULE_NAME = "l10n_it_riba_oca"
 
 
 @openupgrade.migrate()

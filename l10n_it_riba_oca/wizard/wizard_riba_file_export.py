@@ -404,7 +404,7 @@ class RibaFileExport(models.TransientModel):
             {"state": "get", "riba_txt": out, "file_name": "%s.txt" % order_obj.name}
         )
 
-        view_rec = self.env.ref("l10n_it_riba.wizard_riba_file_export")
+        view_rec = self.env.ref("l10n_it_riba_oca.wizard_riba_file_export")
         view_id = view_rec.id if view_rec else False
 
         return {

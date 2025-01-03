@@ -5,14 +5,14 @@ from openupgradelib import openupgrade
 from odoo.tools import DotDict
 
 OLD_MODULE_NAME = "l10n_it_ricevute_bancarie"
-NEW_MODULE_NAME = "l10n_it_riba"
+NEW_MODULE_NAME = "l10n_it_riba_oca"
 RENAMED_MODELS = [
     ("riba.distinta", "riba.slip"),
     ("riba.distinta.line", "riba.slip.line"),
     ("riba.distinta.move.line", "riba.slip.move.line"),
     (
         "report.l10n_it_ricevute_bancarie.distinta_qweb",
-        "report.l10n_it_riba.slip_qweb",
+        "report.l10n_it_riba_oca.slip_qweb",
     ),  # abstract
     ("riba.accreditation", "riba.credit"),
     ("riba.unsolved", "riba.past_due"),
@@ -305,7 +305,7 @@ def pre_absorb_old_module(cr):
         openupgrade.update_module_names(
             cr,
             [
-                ("l10n_it_ricevute_bancarie", "l10n_it_riba"),
+                ("l10n_it_ricevute_bancarie", "l10n_it_riba_oca"),
             ],
             merge_modules=True,
         )

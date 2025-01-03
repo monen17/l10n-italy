@@ -6,7 +6,7 @@ from odoo import models
 
 
 class SlipReportQweb(models.AbstractModel):
-    _name = "report.l10n_it_riba.slip_qweb"
+    _name = "report.l10n_it_riba_oca.slip_qweb"
     _description = "RiBa Slip Report"
 
     def _get_report_values(self, docids, data=None):

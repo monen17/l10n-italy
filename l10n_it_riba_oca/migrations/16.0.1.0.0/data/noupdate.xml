@@ -9,14 +9,14 @@
     </record>
 
     <record id="riba_slip_company_rule" model="ir.rule">
-        <field name="model_id" ref="l10n_it_riba.model_riba_slip" />
+        <field name="model_id" ref="l10n_it_riba_oca.model_riba_slip" />
     </record>
 
     <record id="riba_slip_line_company_rule" model="ir.rule">
-        <field name="model_id" ref="l10n_it_riba.model_riba_slip_line" />
+        <field name="model_id" ref="l10n_it_riba_oca.model_riba_slip_line" />
     </record>
 
     <record id="riba_configuration_company_rule" model="ir.rule">
-        <field name="model_id" ref="l10n_it_riba.model_riba_configuration" />
+        <field name="model_id" ref="l10n_it_riba_oca.model_riba_configuration" />
     </record>
 </odoo>

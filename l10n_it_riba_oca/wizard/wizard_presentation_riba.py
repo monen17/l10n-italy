@@ -41,7 +41,7 @@ class PresentationRibaIssue(models.TransientModel):
             self.presentation_amount -= line.amount_residual
             list_ids.append(line.id)
         res = self.env["ir.actions.act_window"]._for_xml_id(
-            "l10n_it_riba.action_riba_to_issue"
+            "l10n_it_riba_oca.action_riba_to_issue"
         )
         res["domain"] = [("id", "in", list_ids)]
         return res

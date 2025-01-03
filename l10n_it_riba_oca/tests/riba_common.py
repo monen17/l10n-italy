@@ -124,7 +124,7 @@ class TestRibaCommon(common.TransactionCase):
             limit=1,
         )
         self.account_payment_term_riba = self.env.ref(
-            "l10n_it_riba.account_payment_term_riba"
+            "l10n_it_riba_oca.account_payment_term_riba"
         )
         self.invoice = self._create_invoice()
         self.invoice2 = self._create_invoice()
@@ -152,7 +152,7 @@ class TestRibaCommon(common.TransactionCase):
                 "account_type": "asset_receivable",
             }
         )
-        self.company_bank = self.env.ref("l10n_it_riba.company_bank")
+        self.company_bank = self.env.ref("l10n_it_riba_oca.company_bank")
         self.company2_bank = self.env["res.partner.bank"].create(
             {
                 "acc_number": "IT000000000000000000",

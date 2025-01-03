@@ -143,7 +143,7 @@ class RibaIssue(models.TransientModel):
 
         # ----- show slip form
         action_vals = self.env["ir.actions.act_window"]._for_xml_id(
-            "l10n_it_riba.slip_riba_action"
+            "l10n_it_riba_oca.slip_riba_action"
         )
         action_vals["res_id"] = rd_id
         return action_vals

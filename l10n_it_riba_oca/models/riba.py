@@ -243,7 +243,7 @@ class RibaList(models.Model):
                 line.state = "draft"
 
     def action_open_lines(self):
-        action = self.env.ref("l10n_it_riba.detail_riba_action").read()[0]
+        action = self.env.ref("l10n_it_riba_oca.detail_riba_action").read()[0]
         action["domain"] = [("slip_id", "=", self.id)]
         return action
 

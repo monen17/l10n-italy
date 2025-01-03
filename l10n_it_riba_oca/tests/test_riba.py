@@ -117,7 +117,7 @@ class TestInvoiceDueCost(riba_common.TestRibaCommon):
             "doc_model": "riba.slip",
             "docs": self.env["riba.slip"].browse(riba_list.ids),
         }
-        data = self.env["ir.qweb"]._render("l10n_it_riba.slip_qweb", docargs)
+        data = self.env["ir.qweb"]._render("l10n_it_riba_oca.slip_qweb", docargs)
         if config.get("test_report_directory"):
             open(
                 os.path.join(config["test_report_directory"], "riba-list." + format),
@@ -278,7 +278,7 @@ class TestInvoiceDueCost(riba_common.TestRibaCommon):
         self.invoice.action_post()
         self.assertEqual(self.invoice.state, "posted")
 
-        to_issue_action = self.env.ref("l10n_it_riba.action_riba_to_issue")
+        to_issue_action = self.env.ref("l10n_it_riba_oca.action_riba_to_issue")
         to_issue_model = self.env[to_issue_action.res_model]
         to_issue_domain = safe_eval.safe_eval(to_issue_action.domain)
         to_issue_records = (
@@ -331,7 +331,7 @@ class TestInvoiceDueCost(riba_common.TestRibaCommon):
         self.invoice.action_post()
         self.assertEqual(self.invoice.state, "posted")
 
-        to_issue_action = self.env.ref("l10n_it_riba.action_riba_to_issue")
+        to_issue_action = self.env.ref("l10n_it_riba_oca.action_riba_to_issue")
         to_issue_model = self.env[to_issue_action.res_model]
         to_issue_domain = safe_eval.safe_eval(to_issue_action.domain)
         to_issue_records = (
@@ -747,7 +747,7 @@ class TestInvoiceDueCost(riba_common.TestRibaCommon):
         self.invoice.action_post()
         self.assertEqual(self.invoice.state, "posted")
 
-        to_issue_action = self.env.ref("l10n_it_riba.action_riba_to_issue")
+        to_issue_action = self.env.ref("l10n_it_riba_oca.action_riba_to_issue")
         to_issue_model = self.env[to_issue_action.res_model]
         to_issue_domain = safe_eval.safe_eval(to_issue_action.domain)
         to_issue_records = (
@@ -802,7 +802,7 @@ class TestInvoiceDueCost(riba_common.TestRibaCommon):
         invoice = invoice_form.save()
         invoice.action_post()
 
-        to_issue_action = self.env.ref("l10n_it_riba.action_riba_to_issue")
+        to_issue_action = self.env.ref("l10n_it_riba_oca.action_riba_to_issue")
         to_issue_records = self.env[to_issue_action.res_model].search(
             safe_eval.safe_eval(to_issue_action.domain)
         )
@@ -887,7 +887,7 @@ class TestInvoiceDueCost(riba_common.TestRibaCommon):
         invoice = invoice_form.save()
         invoice.action_post()
 
-        to_issue_action = self.env.ref("l10n_it_riba.action_riba_to_issue")
+        to_issue_action = self.env.ref("l10n_it_riba_oca.action_riba_to_issue")
         to_issue_records = self.env[to_issue_action.res_model].search(
             safe_eval.safe_eval(to_issue_action.domain)
         )
@@ -907,7 +907,7 @@ class TestInvoiceDueCost(riba_common.TestRibaCommon):
         slip.confirm()
         self.assertEqual(slip.state, "accepted")
 
-        credit_wizard_action = self.env.ref("l10n_it_riba.riba_credit_action")
+        credit_wizard_action = self.env.ref("l10n_it_riba_oca.riba_credit_action")
         credit_wizard = (
             self.env[credit_wizard_action["res_model"]]
             .with_context(active_id=slip.id)
