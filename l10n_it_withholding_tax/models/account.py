@@ -140,7 +140,9 @@ class AccountPartialReconcile(models.Model):
         # Generate wt moves
         wt_moves = []
         for wt_st in wt_statements:
-            amount_wt = wt_st.get_wt_competence(self.amount)
+            if wt_st.invoice_id.withholding_tax_no_generate_move:
+                continue
+            amount_wt = wt_st.get_wt_competence()
             # Date maturity
             p_date_maturity = False
             payment_lines = wt_st.withholding_tax_id.payment_term._compute_terms(
@@ -338,6 +340,11 @@ class AccountMove(models.Model):
         string="Residual Net To Pay",
         store=True,
         readonly=True,
+    )
+    withholding_tax_no_generate_move = fields.Boolean(
+        string="Do not generate move for Withholding Tax",
+        help="During reconciliation, do not generate the move "
+        "to be reconciled with the Withholding Tax.",
     )
 
     @api.onchange("invoice_line_ids")

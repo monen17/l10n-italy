@@ -118,8 +118,11 @@
                     <field name="withholding_tax" invisible="1" />
                 </xpath>
 
-            </field>
-        </record>
+            <group name="accounting_info_group" position="inside">
+                <field name="withholding_tax_no_generate_move" />
+            </group>
+        </field>
+    </record>
 
         <record id="invoice_supplier_tree_wt" model="ir.ui.view">
             <field name="name">view.withholding.invoice.supplier.tree</field>

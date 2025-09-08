@@ -2,6 +2,7 @@
 # Copyright 2018 Lorenzo Battistini - Agile Business Group
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import warnings
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -257,7 +258,15 @@ class WithholdingTaxStatement(models.Model):
                 else:
                     st.wt_type = "out"
 
-    def get_wt_competence(self, amount_reconcile):
+    def get_wt_competence(self, amount_reconcile=None):
+        if amount_reconcile is not None:
+            warnings.warn(
+                "`amount_reconcile` is deprecated "
+                "because the competence is computed based on existing payments.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         dp_obj = self.env["decimal.precision"]
         amount_wt = 0
         for st in self:
@@ -270,8 +279,21 @@ class WithholdingTaxStatement(models.Model):
                     domain, limit=1
                 )
                 if wt_inv:
+                    # Compute how much has been already paid
+                    # but has no corresponding Withholding Tax move
+                    payment_moves = self.env["account.move"].browse()
+                    for counterpart_line in st.invoice_id._get_reconciled_amls():
+                        payment_moves |= counterpart_line.move_id
+                    # Exclude payments created for Withholding Taxes
+                    wt_moves = self.env["withholding.tax.move"].search(
+                        [("account_move_id", "in", payment_moves.ids)]
+                    )
+                    wt_payment_moves = wt_moves.wt_account_move_id
+                    no_wt_payment_moves = payment_moves - wt_payment_moves
+                    no_wt_paid_amount = sum(no_wt_payment_moves.mapped("amount_total"))
+
                     amount_base = st.invoice_id.amount_untaxed * (
-                        amount_reconcile / st.invoice_id.amount_net_pay
+                        no_wt_paid_amount / st.invoice_id.amount_net_pay
                     )
                     base = round(amount_base * wt_inv.base_coeff, 5)
                     amount_wt = round(

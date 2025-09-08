@@ -39,6 +39,8 @@ pagata:
 
 ![](static/img/pagamento-ritenuta.png)
 
+Per evitare di generare questo ulteriore pagamento: abilitare "Non generare registrazione per ritenuta" nella scheda "Altre informazioni", sezione "Contabilità".
+
 Per il pagamento della ritenuta d'acconto fare riferimento al modulo
 l10n_it_withholding_tax_payment.
 
