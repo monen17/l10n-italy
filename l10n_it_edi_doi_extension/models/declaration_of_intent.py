@@ -1,7 +1,7 @@
-# Copyright 2025 Nextev Srl
+import re
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class L10nItDeclarationOfIntent(models.Model):
@@ -15,20 +15,171 @@ class L10nItDeclarationOfIntent(models.Model):
         readonly=True,
     )
 
-    move_doi_ids = fields.One2many(
-        "account.move.doi",
-        "declaration_id",
-        string="Invoice Declaration Lines",
-        copy=False,
-        readonly=True,
-        help="Links to invoices using this declaration with specific amounts.",
-    )
-
     type = fields.Selection(
         [("in", "Issued from company"), ("out", "Received from customers")],
         required=True,
         default="out",
+        tracking=True,
     )
+
+    # Link to annual plafond (only for type "in")
+    plafond_id = fields.Many2one(
+        comodel_name="l10n_it_edi_doi.plafond.year",
+        string="Annual Plafond",
+        tracking=True,
+        domain="[('company_id', '=', company_id)]",
+        help="Annual plafond assigned by Agenzia delle Entrate. "
+        "Required for issued declarations (type 'in').",
+    )
+
+    # Computed field to check if DOI has a specific threshold or uses plafond
+    has_threshold = fields.Boolean(
+        string="Has Specific Threshold",
+        compute="_compute_has_threshold",
+        store=True,
+        help="If True, this DOI has a specific threshold. "
+        "If False, it uses the total plafond without individual limit.",
+    )
+
+    # Plafond available (for DOIs without threshold, shows plafond available)
+    plafond_available = fields.Monetary(
+        string="Plafond Available",
+        compute="_compute_plafond_available",
+        store=True,
+        help="Available amount from annual plafond (for DOIs without specific threshold)",
+    )
+
+    # Override partner_id to make it optional for type "in"
+    partner_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="Partner",
+        index=True,
+        required=False,  # Will be enforced by constraint for type "out"
+        domain="['|', ('is_company', '=', True), ('parent_id', '=', False)]",
+    )
+
+    @api.depends("threshold")
+    def _compute_has_threshold(self):
+        for rec in self:
+            rec.has_threshold = rec.threshold > 0
+
+    @api.depends("plafond_id.plafond_available", "type", "has_threshold")
+    def _compute_plafond_available(self):
+        for rec in self:
+            if rec.type == "in" and rec.plafond_id and not rec.has_threshold:
+                rec.plafond_available = rec.plafond_id.plafond_available
+            else:
+                rec.plafond_available = 0.0
+
+    @api.constrains("type", "partner_id")
+    def _check_partner_required_for_out(self):
+        """Partner is required for received declarations (type 'out')."""
+        for rec in self:
+            if rec.type == "out" and not rec.partner_id:
+                raise ValidationError(
+                    _(
+                        "Partner is required for received declarations "
+                        "(type 'Received from customers')."
+                    )
+                )
+
+    @api.constrains("type", "plafond_id")
+    def _check_plafond_required_for_in(self):
+        """Plafond is required for issued declarations (type 'in')."""
+        for rec in self:
+            if rec.type == "in" and not rec.plafond_id:
+                raise ValidationError(
+                    _(
+                        "Annual Plafond is required for issued declarations "
+                        "(type 'Issued from company')."
+                    )
+                )
+
+    @api.constrains("protocol_number_part1", "protocol_number_part2")
+    def _check_protocol_format(self):
+        """
+        Validate AdE protocol format for issued declarations.
+
+        The full protocol (part1 + part2) should be 17 characters:
+        - AAAA: Year (4 digits)
+        - NNNNNNNN: Sequential number (8 digits)
+        - CCCCC: Last 5 chars of company fiscal code (5 alphanumeric)
+
+        Format: AAAANNNNNNNNCCCCC (17 characters total)
+        """
+        for rec in self:
+            if rec.type != "in":
+                # Skip validation for received declarations
+                continue
+
+            part1 = (rec.protocol_number_part1 or "").strip()
+            part2 = (rec.protocol_number_part2 or "").strip()
+
+            if not part1 or not part2:
+                continue
+
+            # Combine parts for full protocol
+            full_protocol = part1 + part2
+
+            # Check total length (17 characters)
+            if len(full_protocol) != 17:
+                raise ValidationError(
+                    _(
+                        "The protocol number must be exactly 17 characters.\n"
+                        "Current: %(current)s (%(length)s characters)\n\n"
+                        "Format: AAAANNNNNNNNCCCCC\n"
+                        "- AAAA: Year (4 digits)\n"
+                        "- NNNNNNNN: Sequential (8 digits)\n"
+                        "- CCCCC: Last 5 chars of fiscal code",
+                        current=full_protocol,
+                        length=len(full_protocol),
+                    )
+                )
+
+            # Check format: 4 digits + 8 digits + 5 alphanumeric
+            pattern = r"^(\d{4})(\d{8})([A-Z0-9]{5})$"
+            match = re.match(pattern, full_protocol.upper())
+
+            if not match:
+                raise ValidationError(
+                    _(
+                        "The protocol '%(protocol)s' does not match AdE format.\n\n"
+                        "Required format: AAAANNNNNNNNCCCCC\n"
+                        "- AAAA: Year (4 digits)\n"
+                        "- NNNNNNNN: Sequential number (8 digits)\n"
+                        "- CCCCC: Last 5 characters of company fiscal code\n\n"
+                        "Example: 20250000123456789",
+                        protocol=full_protocol,
+                    )
+                )
+
+            # Extract and validate year
+            protocol_year = int(match.group(1))
+
+            # Check year matches plafond year
+            if rec.plafond_id and protocol_year != rec.plafond_id.year:
+                raise ValidationError(
+                    _(
+                        "The year in protocol (%(protocol_year)s) does not match "
+                        "the plafond year (%(plafond_year)s).",
+                        protocol_year=protocol_year,
+                        plafond_year=rec.plafond_id.year,
+                    )
+                )
+
+    @api.onchange("type")
+    def _onchange_type_clear_plafond(self):
+        """Clear plafond when switching to type 'out'."""
+        if self.type == "out":
+            self.plafond_id = False
+
+    @api.onchange("plafond_id")
+    def _onchange_plafond_set_dates(self):
+        """Suggest dates based on plafond year."""
+        if self.plafond_id and not self.start_date:
+            year = self.plafond_id.year
+            self.start_date = fields.Date.today().replace(year=year, month=1, day=1)
+            self.end_date = fields.Date.today().replace(year=year, month=12, day=31)
 
     def _fetch_valid_declaration_of_intent(
         self, company, partner, currency, date, doi_type="out"
@@ -50,58 +201,6 @@ class L10nItDeclarationOfIntent(models.Model):
             ("type", "=", doi_type),
         ]
         return self.search(domain, limit=1)
-
-    @api.depends(
-        "invoice_ids",
-        "invoice_ids.state",
-        "invoice_ids.l10n_it_edi_doi_amount",
-        "invoice_ids.move_type",
-        "move_doi_ids",
-        "move_doi_ids.amount",
-        "move_doi_ids.move_id.state",
-        "move_doi_ids.move_id.move_type",
-    )
-    def _compute_invoiced(self):
-        """Override to use bridge model amounts when available.
-
-        For invoices with bridge records (multiple declarations), use the specific
-        amounts from the bridge model. For invoices without bridge records (single
-        declaration via l10n_it_edi_doi_id), use the standard l10n_it_edi_doi_amount.
-
-        Refunds (in_refund, out_refund) reduce the invoiced amount.
-        """
-        for declaration in self:
-            total_invoiced = 0
-
-            # Get all posted invoices and draft with name linked through the bridge
-            # model
-            posted_doi_links = declaration.move_doi_ids.filtered(
-                lambda doi: doi.move_id.state == "posted"
-                or (doi.move_id.state == "draft" and doi.move_id.name)
-            )
-            bridge_moves = posted_doi_links.mapped("move_id")
-
-            # Sum amounts from bridge records for multi-declaration invoices
-            # Refunds reduce the total (negative contribution)
-            for doi_link in posted_doi_links:
-                amount = doi_link.amount
-                if doi_link.move_id.move_type in ("in_refund", "out_refund"):
-                    amount = -amount
-                total_invoiced += amount
-
-            # For single-declaration invoices (not using bridge model),
-            # use the standard field
-            posted_invoices = declaration.invoice_ids.filtered(
-                lambda invoice: invoice.state == "posted"
-            )
-            single_declaration_invoices = posted_invoices - bridge_moves
-            for invoice in single_declaration_invoices:
-                amount = invoice.l10n_it_edi_doi_amount
-                if invoice.move_type in ("in_refund", "out_refund"):
-                    amount = -amount
-                total_invoiced += amount
-
-            declaration.invoiced = total_invoiced
 
     @api.depends(
         "purchase_order_ids",

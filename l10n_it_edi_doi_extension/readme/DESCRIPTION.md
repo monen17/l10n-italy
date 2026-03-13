@@ -1,25 +1,29 @@
 **English**
 
-This module extends the functionality of l10n_it_edi_doi, enabling the
+This module extends the functionality of l10n\_it\_edi\_doi, enabling the
 use of the Declaration of Intent (Dichiarazione di Intento) for incoming
 vendor bills and purchase orders.
 
 Key features:
- - Support for multiple Declarations of Intent per invoice
- - Dedicated tab in invoice form for managing DOI associations
- - Automatic validation of DOI amounts and available thresholds
- - Smart warnings when invoice amounts don't match DOI coverage
- - Backward compatibility with single-declaration workflow
+
+* Automatic creation of a dedicated 0% tax for purchase invoices with DOI
+* Automatic fiscal position mappings for Italian purchase taxes
+* Threshold warnings on purchase invoices (similar to sales invoices)
+* Support for "in" type declarations (issued from company to suppliers)
+* Annual threshold (plafond annuale) management for monitoring DOIs usage across the fiscal year
+
+
 
 **Italiano**
 
-Questo modulo estende la funzionalità di l10n_it_edi_doi, permettendo
+Questo modulo estende la funzionalità di l10n\_it\_edi\_doi, permettendo
 l'utilizzo della Dichiarazione di Intento per le fatture di acquisto in
 ingresso e gli ordini di acquisto.
 
-Caratteristiche principali:
- - Supporto per dichiarazioni di intento multiple per fattura
- - Tab dedicato nel form fattura per gestire le associazioni DOI
- - Validazione automatica degli importi e soglie disponibili
- - Avvisi intelligenti quando gli importi non corrispondono
- - Retrocompatibilità con il flusso a dichiarazione singola
+Funzionalità principali:
+
+* Creazione automatica di un'imposta 0% dedicata per le fatture di acquisto con DOI
+* Mappature automatiche della posizione fiscale per le aliquote IVA italiane in acquisto
+* Avvisi sulla soglia nelle fatture di acquisto (come per le fatture di vendita)
+* Supporto per le dichiarazioni di tipo "in" (emesse dall'azienda ai fornitori)
+* Gestione del plafond annuale per monitorare l'utilizzo delle DOI durante l'anno fiscale

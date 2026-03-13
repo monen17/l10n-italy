@@ -1,53 +1,34 @@
 **English**
 
-In the company configuration, it is necessary to define a dedicated tax
-for the Declaration of Intent for incoming vendor bills.
+Upon module installation, a dedicated 0% tax for purchase invoices with
+Declaration of Intent is automatically created and configured in the
+company settings. The fiscal position "Declaration of Intent" is also
+extended with mappings for all Italian purchase taxes (22%, 10%, 5%, 4%).
 
 In the contacts, you can create a Declaration of Intent by choosing
 between two types:
- - "Issued from company": for declarations issued by the company. 
- - "Received from customer": for declarations received from suppliers.
 
-**Multiple Declarations of Intent:**
+- "Issued from company": for declarations issued by the company to suppliers.
+- "Received from customer": for declarations received from customers.
 
-When creating or editing a vendor bill, you can now associate multiple
-Declarations of Intent:
-
-1. Go to the "Declarations of Intent" tab in the invoice form
-2. Add one or more declarations using the list
-3. For each declaration, specify the amount to be covered
-4. The module will automatically:
-   - Validate that amounts don't exceed available thresholds
-   - Show a warning if total DOI amounts don't match invoice amount
-   - Update the invoiced amounts on each declaration
-   - Generate protocol numbers in the XML export
-
-You can also use the traditional single-declaration field for backward
-compatibility, or mix both approaches for different invoices.
+When a Declaration of Intent is selected on a purchase invoice, the system
+displays threshold warnings similar to those shown on sales invoices,
+helping you monitor the remaining amount available.
 
 **Italiano**
 
-Nella configurazione dell'azienda è necessario definire un'imposta
-dedicata alla Dichiarazione di Intento per le fatture in ingresso. Nei
-contatti è possibile creare una Dichiarazione di Intento scegliendo tra
-due tipologie:
- - "Issued from company": per le dichiarazioni emesse dall'azienda.
- - "Received from customer": per le dichiarazioni ricevute dai fornitori.
+All'installazione del modulo, viene automaticamente creata e configurata
+un'imposta 0% dedicata per le fatture di acquisto con Dichiarazione di
+Intento. La posizione fiscale "Dichiarazione di Intento" viene estesa
+con le mappature per tutte le aliquote IVA italiane in acquisto
+(22%, 10%, 5%, 4%).
 
-**Dichiarazioni di Intento Multiple:**
+Nei contatti è possibile creare una Dichiarazione di Intento scegliendo
+tra due tipologie:
 
-Durante la creazione o modifica di una fattura fornitore, è ora possibile
-associare più Dichiarazioni di Intento:
+- "Issued from company": per le dichiarazioni emesse dall'azienda ai fornitori.
+- "Received from customer": per le dichiarazioni ricevute dai clienti.
 
-1. Accedi al tab "Dichiarazioni di Intento" nel form della fattura
-2. Aggiungi una o più dichiarazioni usando la lista
-3. Per ogni dichiarazione, specifica l'importo da coprire
-4. Il modulo automaticamente:
-   - Valida che gli importi non superino le soglie disponibili
-   - Mostra un avviso se il totale DOI non corrisponde all'importo fattura
-   - Aggiorna gli importi fatturati su ogni dichiarazione
-   - Genera i numeri di protocollo nell'esportazione XML
-
-È possibile continuare ad usare il campo tradizionale a dichiarazione
-singola per retrocompatibilità, o combinare entrambi gli approcci per
-fatture diverse.
+Quando viene selezionata una Dichiarazione di Intento su una fattura di
+acquisto, il sistema mostra avvisi sulla soglia simili a quelli delle
+fatture di vendita, aiutando a monitorare l'importo residuo disponibile.
