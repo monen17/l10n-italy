@@ -459,8 +459,9 @@ class TestWithholdingTax(TransactionCase):
         """
         # Arrange
         amount = 2000
-        wt_amount = 500
         bill = self._create_bill(price_unit=amount)
+        w_tax = bill.line_ids.invoice_line_tax_wt_ids
+        wt_amount = amount * w_tax.rate_ids.tax / 100
         bill.withholding_tax_no_generate_move = True
         wt_statement = self.env["withholding.tax.statement"].search(
             [
@@ -468,6 +469,7 @@ class TestWithholdingTax(TransactionCase):
             ]
         )
         # pre-condition
+        self.assertEqual(wt_amount, 400)
         self.assertTrue(bill.withholding_tax_no_generate_move)
 
         # Act 1: Partial payment generating no move
